@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Cliche;
+
+use Illuminate\Http\Request;
+
+use App\Http\Requests;
+
+class ClicheController extends Controller
+{
+    //
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+    * Display a list of all cliches.
+    *
+    * @param  Request  $request
+    * @return Response
+    */
+    public function index(Request $request)
+    {
+        return view('cliches.index');
+    }
+
+    /**
+    * Create a new cliche.
+    *
+    * @param  Request  $request
+    * @return Response
+    */
+    public function store(Request $request)
+    {
+        $this->validate($request, [
+            'display_name' => 'required|max:255',
+            'description' => 'required|max:4000'
+        ]);
+
+
+        //$request->user()->cliches()->create([
+        Cliche::create([
+            'display_name' => $request->display_name,
+            'description' => $request->description
+        ]);
+
+        return redirect('/cliches');
+    }
+}
