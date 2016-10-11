@@ -10,8 +10,12 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
     <!-- Styles -->
     <link href="/css/app.css" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
     <!-- Scripts -->
     <script>
@@ -83,5 +87,7 @@
 
     <!-- Scripts -->
     <script src="/js/app.js"></script>
+
+    @yield('footer_scripts')
 </body>
 </html>
