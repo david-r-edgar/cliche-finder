@@ -18,4 +18,15 @@ class SearchController extends Controller
     {
         return view('search.index');
     }
+
+    /**
+    * Main handler when user submits search form.
+    *
+    * @param  Request  $request
+    * @return Response
+    */
+    public function search(Request $request)
+    {
+
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Cliche;
+use App\Variant;
 
 use Illuminate\Http\Request;
 
@@ -25,7 +26,9 @@ class ClicheController extends Controller
     */
     public function index(Request $request)
     {
-        return view('cliches.index');
+        $cliches = Cliche::orderBy('created_at', 'asc')->get();
+
+        return view('cliches.index', ['cliches' => $cliches]);
     }
 
     /**
@@ -43,10 +46,19 @@ class ClicheController extends Controller
 
 
         //$request->user()->cliches()->create([
-        Cliche::create([
+        $createdCliche = Cliche::create([
             'display_name' => $request->display_name,
             'description' => $request->description
         ]);
+
+        if ($request->pattern && (0 < strlen($request->pattern))) {
+            Variant::create([
+                'natural' => "",
+                'pat_lang' => "re.1",
+                'pattern' => $request->pattern,
+                'cliche_id' => $createdCliche->id
+            ]);
+        }
 
         return redirect('/cliches');
     }
