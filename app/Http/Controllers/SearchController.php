@@ -27,6 +27,8 @@ class SearchController extends Controller
     */
     public function search(Request $request)
     {
-
+        $this->validate($request, [
+            'haystackText' => 'required|max:4000'
+        ]);
     }
 }
