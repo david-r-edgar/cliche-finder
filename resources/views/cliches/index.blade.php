@@ -27,9 +27,6 @@
                 <label for="pattern" class="col-sm-3 control-label">Regular Expression</label>
 
                 <div id="variants">
-                    <div class="col-sm-6">
-                        <input type="text" name="pattern" id="pattern" class="form-control">
-                    </div>
                 </div>
                 <div class="col-sm-1">
                     <button id="addVariant" type="button" class="btn btn-default">

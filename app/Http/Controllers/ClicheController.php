@@ -51,13 +51,15 @@ class ClicheController extends Controller
             'description' => $request->description
         ]);
 
-        if ($request->pattern && (0 < strlen($request->pattern))) {
-            Variant::create([
-                'natural' => "",
-                'pat_lang' => "re.1",
-                'pattern' => $request->pattern,
-                'cliche_id' => $createdCliche->id
-            ]);
+        foreach ($request->pattern as $index => $variant) {
+            if ($variant && (0 < strlen($variant))) {
+                Variant::create([
+                    'natural' => "",
+                    'pat_lang' => "re.1",
+                    'pattern' => $variant,
+                    'cliche_id' => $createdCliche->id
+                ]);
+            }
         }
 
         return redirect('/cliches');
