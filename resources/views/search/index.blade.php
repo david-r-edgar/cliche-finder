@@ -10,14 +10,16 @@
         <!-- Display Validation Errors -->
         @include('common.errors')
 
-        <form action="{{ url('search') }}" method="POST" class="form-horizontal">
+        <form action="{{ url('search') }}" method="POST" class="form-horizontal" onsubmit="return getContent()">
             {{ csrf_field() }}
+            <textarea id="haystackText" name="haystackText" style="display:none"></textarea>
 
             <div class="form-group">
                 <!--<label for="haystackText" class="col-sm-3 control-label">Text to search</label>-->
 
                 <div class="col-sm-offset-1 col-sm-8">
-                    <textarea type="text" name="haystackText" id="haystackText" class="form-control" style="height: 28em;">{{old("haystackText", '' )}}</textarea>
+                    <div contenteditable type="text" id="inputSearchText" class="form-control" style="height: 28em;">{!! old("haystackText",
+                        (isset($haystackText) ? $haystackText : '') )!!}</div>
                 </div>
             </div>
 
@@ -31,4 +33,15 @@
         </form>
     </div>
 
+
+
+@endsection
+
+
+@section('footer_scripts')
+    <script type="text/javascript">
+        function getContent(){
+            document.getElementById("haystackText").value = document.getElementById("inputSearchText").innerHTML;
+        }
+    </script>
 @endsection

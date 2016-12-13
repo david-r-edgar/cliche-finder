@@ -123,4 +123,16 @@ class ClicheController extends Controller
         return redirect('/cliche/' . $cliche->id);
     }
 
+
+    public function destroy(Request $request, Cliche $cliche)
+    {
+        //FIXME maybe we ought to ask for confirmation first?
+
+        foreach($cliche->variants as $variant) {
+            $variant->delete();
+        }
+        $cliche->delete();
+
+        return redirect('/cliches');
+    }
 }

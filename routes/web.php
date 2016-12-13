@@ -11,13 +11,19 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/', function () {
+//    return view('welcome');
+//});
+
+Route::get('/', 'SearchController@index');
+
+
+Route::get('/search', 'SearchController@index');
+Route::post('/search', 'SearchController@search');
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index');
+//Route::get('/home', 'HomeController@index');
 
 Route::get('/cliches', 'ClicheController@index');
 Route::get('/cliche/new', 'ClicheController@newCliche');
@@ -25,6 +31,3 @@ Route::get('/cliche/{cliche}', 'ClicheController@details');
 Route::post('/cliche', 'ClicheController@store');
 Route::post('/cliche/{cliche}', 'ClicheController@edit');
 Route::delete('/cliche/{cliche}', 'ClicheController@destroy');
-
-Route::get('/search', 'SearchController@index');
-Route::post('/search', 'SearchController@search');
