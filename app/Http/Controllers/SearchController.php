@@ -30,7 +30,7 @@ class SearchController extends Controller
     public function search(Request $request)
     {
         $this->validate($request, [
-            'haystackText' => 'required|max:40000'
+            'haystackText' => 'required|max:20000'
         ]);
 
         $highlightedText = $request->haystackText;
@@ -40,13 +40,15 @@ class SearchController extends Controller
             //var_dump($variant->pattern);
             preg_match_all('/' . $variant->pattern . '/', $request->haystackText, $matches, PREG_OFFSET_CAPTURE);
             if (0 < sizeof($matches[0])) {
-                $fmtOpen = "<span style='background-color: yellow;'>";
-                $fmtClose = "</span>";
-                $startMatchPosn = $matches[0][0][1];
-                $endMatchPosn = $matches[0][0][1] + strlen($matches[0][0][0]);
+                foreach ($matches[0] as $match) {
+                    $fmtOpen = "<span style='background-color: yellow;'>";
+                    $fmtClose = "</span>";
+                    $startMatchPosn = $match[1];
+                    $endMatchPosn = $match[1] + strlen($match[0]);
 
-                $highlightedText = substr_replace($highlightedText, $fmtClose, $endMatchPosn, 0);
-                $highlightedText = substr_replace($highlightedText, $fmtOpen, $startMatchPosn, 0);
+                    $highlightedText = substr_replace($highlightedText, $fmtClose, $endMatchPosn, 0);
+                    $highlightedText = substr_replace($highlightedText, $fmtOpen, $startMatchPosn, 0);
+                }
             }
         }
 
