@@ -22,14 +22,6 @@
                         (isset($haystackText) ? $haystackText : '') )!!}</div>
                 </div>
             </div>
-
-            <div class="form-group">
-                <div class="col-sm-offset-6 col-sm-6">
-                    <button type="submit" class="btn btn-default">
-                        <i class="fa fa-search"></i> Search text for cliches
-                    </button>
-                </div>
-            </div>
         </form>
     </div>
 
@@ -64,7 +56,19 @@
         };
 
         var submitSearchRequest = debounce(function() {
-            console.log("submitSearchRequest");
+            var xhr = new XMLHttpRequest();
+            var url = "api/search";
+            var inputSearchText = encodeURIComponent(
+                document.getElementById("inputSearchText").innerHTML).replace(/%20/g, "+");
+            var params = "input=" + inputSearchText + "&content-type=text/plain";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if(xhr.readyState == 4 && xhr.status == 200) {
+                    console.log(xhr.responseText);
+                }
+            }
+            xhr.send(params);
         }, 500);
 
         document.getElementById("inputSearchText").addEventListener("paste", submitSearchRequest);
