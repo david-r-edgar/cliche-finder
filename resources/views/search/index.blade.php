@@ -17,8 +17,8 @@
             <div class="form-group">
                 <!--<label for="haystackText" class="col-sm-3 control-label">Text to search</label>-->
 
-                <div class="col-sm-offset-1 col-sm-8">
-                    <div contenteditable type="text" id="inputSearchText" class="form-control" style="height: 28em;">{!! old("haystackText",
+                <div class="col-sm-12">
+                    <div contenteditable type="text" id="inputSearchText" class="form-control" style="height: 75vh;">{!! old("haystackText",
                         (isset($haystackText) ? $haystackText : '') )!!}</div>
                 </div>
             </div>

@@ -37,10 +37,14 @@ class SearchController extends Controller
 
         $variants = Variant::orderBy('created_at', 'asc')->get();
         foreach ($variants as $variant) {
-            //var_dump($variant->pattern);
             preg_match_all('/' . $variant->pattern . '/', $request->haystackText, $matches, PREG_OFFSET_CAPTURE);
+            //var_dump($matches);
+
             if (0 < sizeof($matches[0])) {
-                foreach ($matches[0] as $match) {
+                //foreach ($matches[0] as $match) {
+                $matchIndex = count($matches[0]);
+                while($matchIndex) {
+                    $match = $matches[0][--$matchIndex];
                     $fmtOpen = "<span style='background-color: yellow;'>";
                     $fmtClose = "</span>";
                     $startMatchPosn = $match[1];
@@ -53,5 +57,37 @@ class SearchController extends Controller
         }
 
         return view('search.index', ['haystackText' => $highlightedText]);
+    }
+
+
+
+    public function apiSearch(Request $request)
+    {
+        //FIXME need to make a JSON response for api validation errors
+        $this->validate($request, [
+            'input' => 'required|max:20000'
+        ]);
+
+        $outputMatches = array();
+        $variants = Variant::orderBy('created_at', 'asc')->get();
+        foreach ($variants as $variant) {
+            preg_match_all('/' . $variant->pattern . '/', $request->input, $matches, PREG_OFFSET_CAPTURE);
+            if (0 < sizeof($matches[0])) {
+                foreach($matches[0] as $match) {
+                    $thisMatch = (object)array(
+                        'posn' => $match[1],
+                        'len' => strlen($match[0]),
+                        'cliche' => $variant->cliche->display_name,
+                        'pat' => $variant->pattern,
+                        'descr' => $variant->description);
+                    $outputMatches[] = $thisMatch;
+                }
+            }
+        }
+
+        return response()->json([
+            'inputReceived' => $request->input,
+            'matches' => $outputMatches
+        ]);
     }
 }
