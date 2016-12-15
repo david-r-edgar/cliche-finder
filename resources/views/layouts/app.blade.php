@@ -14,6 +14,7 @@
 
     <!-- Styles -->
     <link href="/css/app.css" rel="stylesheet">
+    <link href="/css/clicheFinder.css" rel="stylesheet">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
@@ -51,10 +52,12 @@
                         &nbsp;
                     </ul>
 
-                    <ul class="nav navbar-nav navbar-left">
-                        <li><a href="/search">Search text</a></li>
-                        <li><a href="/cliches">Cliche list</a></li>
-                    </ul>
+                    @if (!Auth::guest())
+                        <ul class="nav navbar-nav navbar-left">
+                            <li><a href="/search">Search text</a></li>
+                            <li><a href="/cliches">Cliche list</a></li>
+                        </ul>
+                    @endif
 
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">

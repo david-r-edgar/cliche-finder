@@ -1,0 +1,18 @@
+body {
+
+}
+
+.searchFormContainer {
+    position: absolute;
+    top: 64px;
+    bottom: 0px;
+    margin-bottom: 8px;
+}
+
+.searchFormContainer #inputSearchText {
+    height: 100%;
+}
+
+#editClichePage #description {
+    height: 12em;
+}

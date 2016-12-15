@@ -65,7 +65,8 @@ class SearchController extends Controller
     {
         //FIXME need to make a JSON response for api validation errors
         $this->validate($request, [
-            'input' => 'required|max:20000'
+            'input' => 'required|max:20000',
+            'content-type' => 'max:100' //FIXME we should check for text/plain and what else?
         ]);
 
         $outputMatches = array();
@@ -78,7 +79,6 @@ class SearchController extends Controller
                         'posn' => $match[1],
                         'len' => strlen($match[0]),
                         'cliche' => $variant->cliche->display_name,
-                        'pat' => $variant->pattern,
                         'descr' => $variant->description);
                     $outputMatches[] = $thisMatch;
                 }
