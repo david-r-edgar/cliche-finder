@@ -19,8 +19,6 @@ $(document).ready(function() {
         document.getElementById("inputSearchText").innerHTML = highlightedText;
     }
 
-    var tagBody = '(?:[^"\'>]|"[^"]*"|\'[^\']*\')*';
-
 
 
 
