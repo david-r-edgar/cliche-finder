@@ -1,19 +1,49 @@
 
 
+
+
+
+
 //class representing the input text with the text itself separated from its HTML tags
-var SeparatedHTML = function(inputText) {
+var SeparatedHTML = function(inputHTML) {
+    var plainText = '';
+    var matchArray = [];
 
+    var tagBody = '(?:[^"\'>]|"[^"]*"|\'[^\']*\')*';
+    var tagOrComment = new RegExp(
+        '(<(?:'
+        // Comment body.
+        + '!--(?:(?:-*[^->])*--+|-?)'
+        // Special "raw text" elements whose content should be elided.
+        + '|script\\b' + tagBody + '>[\\s\\S]*?</script\\s*'
+        + '|style\\b' + tagBody + '>[\\s\\S]*?</style\\s*'
+        // Regular name
+        + '|/?[a-z]'
+        + tagBody
+        + ')>)',
+        'gi');
 
+    var prevIndex = 0;
+    while ((myArray = tagOrComment.exec(inputHTML)) !== null) {
+        var matchStartIndex = tagOrComment.lastIndex - myArray[0].length;
+        plainText += inputHTML.substring(prevIndex, matchStartIndex);
+        matchArray.push({index: matchStartIndex, tag: myArray[0]});
+        //console.log('Found ' + myArray[0]);
+        //console.log('Next match starts at ' + tagOrComment.lastIndex);
+        prevIndex = tagOrComment.lastIndex;
+    }
+    plainText += inputHTML.substring(prevIndex);
 
-
+    console.log(plainText);
+    console.log(matchArray);
 }
 
 SeparatedHTML.prototype.getPlainText = function() {
-
+    return plainText;
 }
 
 SeparatedHTML.prototype.getTagList = function() {
-
+    return matchArray;
 }
 
 
