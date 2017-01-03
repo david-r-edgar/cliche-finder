@@ -1,0 +1,81 @@
+
+Client extracts from input:
+ - plain text
+ - list of removed tags, with insertion positions relative to plain text
+   eg.
+    tagList =
+     [
+      0, "<p>"
+      5, "<a href='p.html'>"
+      13, "</a>"
+      32, "<span>"
+      36, "</span>"
+      63, "</p>"
+     ]
+
+Client sends plain text to server
+
+Server matches cliches, returns array of matches
+ where each match has
+ - start position relative to plain text
+ - end position relative to plain text
+ - cliche matched (canonical text, description)
+These matches may be overlapping.
+
+Client goes through array, dealing with overlapping cliches
+ overlaps split up into sections, where the overlap boundaries occur
+ so the whole of each section refers to either one or more than one cliche
+ eg.
+   matchedRangesList =
+    [
+     14-25, [cliche1]
+     25-31, [cliche1, cliche2]
+     31-47, [cliche2]
+    ]
+
+
+
+Then the client inserts open and closing tags for the matched range into its tag list.
+It must further split up the ranges, to ensure proper nesting inside original tags
+
+iterate through matchedRangeList, maintain index into tag list
+foreach (matchedRangeList)
+  while (tagIndex <= matchedRangeList.start)
+    insert tag
+    tagIndex ++
+  insert matchedRangeList.start
+  while (tagIndex < matchedRangeList.end)
+    insert matchedRangeList.end
+    insert tag
+    tagIndex ++
+    insert matchedRangeList.start
+  insert matchedRangeList.end
+while (tagIndex < lastTag)
+  insert tag
+  tagIndex++
+
+
+
+then we end up with a combined list
+eg.
+  combinedList =
+  [
+    0, "<p>"
+    5, "<a href='p.html'>"
+    13, "</a>"
+    14, "<begincliche id=cliche1>"
+    25, "<endcliche>"
+    25, "<begincliche id=cliche1_2>"
+    31, "<endcliche>"
+    31, "<begincliche id=cliche2>"
+    32, "<endcliche>"
+    32, "<span>"
+    32, "<begincliche id=cliche2>"
+    47, "<endcliche>"
+    36, "</span>"
+    63, "</p>"
+  ]
+
+
+It's then easy to insert these tags into the plain text again (in order, where the positions are identical)
+and produce the output HTML text

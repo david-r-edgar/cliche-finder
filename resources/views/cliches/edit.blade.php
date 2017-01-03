@@ -116,5 +116,5 @@
 @endsection
 
 @section('footer_scripts')
-<script src="/js/cliches.js"></script>
+    <script src="/js/cliches.js"></script>
 @endsection

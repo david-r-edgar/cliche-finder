@@ -16,3 +16,7 @@ body {
 #editClichePage #description {
     height: 12em;
 }
+
+.hi-li {
+    background-color: yellow;
+}
