@@ -6,8 +6,8 @@
 
 //class representing the input text with the text itself separated from its HTML tags
 var SeparatedHTML = function(inputHTML) {
-    var plainText = '';
-    var matchArray = [];
+    this.plainText = '';
+    this.matchArray = [];
 
     var tagBody = '(?:[^"\'>]|"[^"]*"|\'[^\']*\')*';
     var tagOrComment = new RegExp(
@@ -24,26 +24,21 @@ var SeparatedHTML = function(inputHTML) {
         'gi');
 
     var prevIndex = 0;
-    while ((myArray = tagOrComment.exec(inputHTML)) !== null) {
-        var matchStartIndex = tagOrComment.lastIndex - myArray[0].length;
-        plainText += inputHTML.substring(prevIndex, matchStartIndex);
-        matchArray.push({index: matchStartIndex, tag: myArray[0]});
-        //console.log('Found ' + myArray[0]);
-        //console.log('Next match starts at ' + tagOrComment.lastIndex);
+    while ((tagArray = tagOrComment.exec(inputHTML)) !== null) {
+        var matchStartIndex = tagOrComment.lastIndex - tagArray[0].length;
+        this.plainText += inputHTML.substring(prevIndex, matchStartIndex);
+        this.matchArray.push({index: matchStartIndex, tag: tagArray[0]});
         prevIndex = tagOrComment.lastIndex;
     }
-    plainText += inputHTML.substring(prevIndex);
-
-    console.log(plainText);
-    console.log(matchArray);
+    this.plainText += inputHTML.substring(prevIndex);
 }
 
 SeparatedHTML.prototype.getPlainText = function() {
-    return plainText;
+    return this.plainText;
 }
 
 SeparatedHTML.prototype.getTagList = function() {
-    return matchArray;
+    return this.matchArray;
 }
 
 
@@ -72,7 +67,7 @@ $(document).ready(function() {
             highlightedText = highlightedText.substr(0, posn) + fmtClose + highlightedText.substr(posn);
             offset += fmtClose.length;
         }
-        document.getElementById("inputSearchText").innerHTML = highlightedText;
+        //document.getElementById("inputSearchText").innerHTML = highlightedText;
     }
 
 
@@ -121,12 +116,29 @@ $(document).ready(function() {
     }
 
     var submitSearchRequest = debounce(function() {
-        var inputSearchText = document.getElementById("inputSearchText").innerText;
+        var inputSearchText = document.getElementById("inputSearchText").innerHTML;
 
         var separatedInput = new SeparatedHTML(inputSearchText);
 
+        console.log(separatedInput.getPlainText());
+        console.log(separatedInput.getTagList());
+
         requestMatches(separatedInput.getPlainText()).then(function(response) {
             console.log("Success!", response);
+
+            //
+
+
+
+
+
+
+
+
+
+
+
+
         });
     }, 1500);
 
