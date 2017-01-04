@@ -73,6 +73,7 @@ SeparatedHTML.prototype.recombine = function() {
 
 
 $(document).ready(function() {
+    /*
     var highlightMatches = function(matchArray) {
         var highlightedText = document.getElementById("inputSearchText").innerText;
         var offset = 0;
@@ -91,6 +92,80 @@ $(document).ready(function() {
         }
         //document.getElementById("inputSearchText").innerHTML = highlightedText;
     }
+    */
+
+
+
+
+    /**
+     * Sort and split up matched cliche ranges obtained from the server.
+     *
+     * The list of cliches we generate should be ordered by start position,
+     * and it should not contain any overlapping ranges.
+     * i.e. if two cliche matches overlap, then we should output a range of positions where
+     * they overlap, which refers to both cliches
+     *
+     * @param {Array} matchedCliches - unordered array of cliches matched by the server
+     * @return {Array} ordered and non-overlapping array of cliche matches
+     */
+    var sanitiseMatchedCliches = function(matchedCliches) {
+
+        //utility ordered list class (orders only as items pushed into it)
+        function OrderedIntList() {
+            this.list = [];
+        }
+        OrderedIntList.prototype.push = function(value) {
+            var valueInserted = false;
+            for(elem in this.list) {
+                if (this.list[elem] > value) {
+                    this.list.splice(elem, 0, value);
+                    valueInserted = true;
+                    break;
+                }
+            }
+            if (!valueInserted) {
+                this.list.push(value);
+            }
+        }
+
+        //first make a list of all boundary points
+        var rangeBoundaries = new OrderedIntList;
+        for (match of matchedCliches) {
+            rangeBoundaries.push(match.beginPosn);
+            rangeBoundaries.push(match.endPosn);
+        }
+
+        var sortedNonOverlappingMatches = [];
+
+        //then iterate through list of boundary points
+        //for each range between one and the next, create a list item
+        //pointing to any cliches matched
+        for (boundary in rangeBoundaries.list) {
+            //fences & fenceposts - create ranges on end boundary point, so none on first
+            if (boundary > 0) {
+                var range = {
+                    beginPosn: rangeBoundaries.list[boundary-1],
+                    endPosn: rangeBoundaries.list[boundary],
+                    matches: []
+                }
+                //search matchedCliches list for all cliches matched in this range
+                for (match of matchedCliches) {
+                    if ((match.beginPosn <= range.beginPosn && match.endPosn > range.beginPosn)
+                        ||
+                        (match.beginPosn < range.endPosn && match.endPosn >=range.endPosn)) {
+                        range.matches.push({cliche: match.cliche, descr: match.descr});
+                    }
+                }
+                if (range.matches.length) {
+                    sortedNonOverlappingMatches.push(range);
+                }
+            }
+        }
+
+        return sortedNonOverlappingMatches;
+    }
+
+
 
 
     /**
@@ -112,8 +187,8 @@ $(document).ready(function() {
             xhr.onreadystatechange = function() {
                 if(xhr.readyState == 4 && xhr.status == 200) {
                     console.log(xhr.responseText);
-                    highlightMatches(JSON.parse(xhr.responseText).matches);
-                    resolve(true);
+                    //highlightMatches();
+                    resolve(JSON.parse(xhr.responseText).matches);
                 }
             }
             xhr.send(params);
@@ -150,8 +225,9 @@ $(document).ready(function() {
 
         var separatedInput = new SeparatedHTML(inputSearchText);
 
-        requestMatches(separatedInput.getPlainText()).then(function(response) {
-            console.log("Success!", response);
+        requestMatches(separatedInput.getPlainText()).then(function(matchedCliches) {
+            console.log("Server returned matching cliches: ", matchedCliches);
+            sanitiseMatchedCliches(matchedCliches);
 
             //want to put html text back together again
             var highlightedText = separatedInput.recombine();

@@ -21,12 +21,14 @@ class SearchController extends Controller
         return view('search.index');
     }
 
+    //FIXME commented because I think this is unused - DELETEME?
     /**
     * Main handler when user submits search form.
     *
     * @param  Request  $request
     * @return Response
     */
+    /*
     public function search(Request $request)
     {
         $this->validate($request, [
@@ -58,7 +60,7 @@ class SearchController extends Controller
 
         return view('search.index', ['haystackText' => $highlightedText]);
     }
-
+*/
 
 
     public function apiSearch(Request $request)
@@ -76,8 +78,8 @@ class SearchController extends Controller
             if (0 < sizeof($matches[0])) {
                 foreach($matches[0] as $match) {
                     $thisMatch = (object)array(
-                        'posn' => $match[1],
-                        'len' => strlen($match[0]),
+                        'beginPosn' => $match[1],
+                        'endPosn' => $match[1] + strlen($match[0]),
                         'cliche' => $variant->cliche->display_name,
                         'descr' => $variant->description);
                     $outputMatches[] = $thisMatch;
