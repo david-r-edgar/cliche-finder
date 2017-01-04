@@ -3,11 +3,13 @@
 
 
 
-
-//class representing the input text with the text itself separated from its HTML tags
+/**
+ * Constructor for class representing the input text with the text itself separated from its HTML tags
+ * @param {String} inputHTML - the input text string
+ */
 var SeparatedHTML = function(inputHTML) {
     this.plainText = '';
-    this.matchArray = [];
+    this.tagList = [];
 
     var tagBody = '(?:[^"\'>]|"[^"]*"|\'[^\']*\')*';
     var tagOrComment = new RegExp(
@@ -29,7 +31,7 @@ var SeparatedHTML = function(inputHTML) {
     while ((tagArray = tagOrComment.exec(inputHTML)) !== null) {
         var matchStartIndex = tagOrComment.lastIndex - tagArray[0].length;
         this.plainText += inputHTML.substring(prevIndex, matchStartIndex);
-        this.matchArray.push({index: this.plainText.length, tag: tagArray[0]});
+        this.tagList.push({index: this.plainText.length, tag: tagArray[0]});
         prevIndex = tagOrComment.lastIndex;
     }
     this.plainText += inputHTML.substring(prevIndex);
@@ -40,15 +42,18 @@ SeparatedHTML.prototype.getPlainText = function() {
 }
 
 SeparatedHTML.prototype.getTagList = function() {
-    return this.matchArray;
+    return this.tagList;
 }
 
 
-//recombine plainText with the matchArray and return it
+/**
+ * Recombines plainText with the tagList.
+ * @return {String} the combined output HTML ready to display
+ */
 SeparatedHTML.prototype.recombine = function() {
     var outputText = "";
     var plainTextIndex = 0;
-    for (var tag of this.matchArray) {
+    for (var tag of this.tagList) {
         //insert all plain text before the tag
         outputText += this.plainText.substring(plainTextIndex, tag.index);
         //insert the tag
@@ -88,8 +93,11 @@ $(document).ready(function() {
     }
 
 
-    //requests matches from the server for the given plain text input
-    //returns promise which resolves to array of matches from the server
+    /**
+     * Requests matches from the server for the given plain text input
+     * @param {string} plainTextInput - the input text to look for matches within
+     * @return {Promise} promise which resolves to array of matches from the server
+     */
     var requestMatches = function(plainTextInput) {
         return new Promise(function(resolve, reject) {
 
@@ -113,10 +121,12 @@ $(document).ready(function() {
     };
 
 
-    // Returns a function, that, as long as it continues to be invoked, will not
-    // be triggered. The function will be called after it stops being called for
-    // N milliseconds. If `immediate` is passed, trigger the function on the
-    // leading edge, instead of the trailing.
+    /**
+     * Returns a function, that, as long as it continues to be invoked, will not
+     * be triggered. The function will be called after it stops being called for
+     * N milliseconds. If `immediate` is passed, trigger the function on the
+     * leading edge, instead of the trailing.
+     */
     function debounce(func, wait, immediate) {
         var timeout;
         return function() {
@@ -132,6 +142,9 @@ $(document).ready(function() {
         };
     }
 
+    /**
+     * Handler routine to deal with new input.
+     */
     var submitSearchRequest = debounce(function() {
         var inputSearchText = document.getElementById("inputSearchText").innerHTML;
 
