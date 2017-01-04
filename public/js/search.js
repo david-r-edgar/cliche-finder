@@ -24,10 +24,12 @@ var SeparatedHTML = function(inputHTML) {
         'gi');
 
     var prevIndex = 0;
+    //run through the text, searching for the next tag, and when we find it,
+    //save, in their separate places, the plain text before it and the tag itself
     while ((tagArray = tagOrComment.exec(inputHTML)) !== null) {
         var matchStartIndex = tagOrComment.lastIndex - tagArray[0].length;
         this.plainText += inputHTML.substring(prevIndex, matchStartIndex);
-        this.matchArray.push({index: matchStartIndex, tag: tagArray[0]});
+        this.matchArray.push({index: this.plainText.length, tag: tagArray[0]});
         prevIndex = tagOrComment.lastIndex;
     }
     this.plainText += inputHTML.substring(prevIndex);
@@ -42,6 +44,21 @@ SeparatedHTML.prototype.getTagList = function() {
 }
 
 
+//recombine plainText with the matchArray and return it
+SeparatedHTML.prototype.recombine = function() {
+    var outputText = "";
+    var plainTextIndex = 0;
+    for (var tag of this.matchArray) {
+        //insert all plain text before the tag
+        outputText += this.plainText.substring(plainTextIndex, tag.index);
+        //insert the tag
+        outputText += tag.tag;
+        //update the index into the plain text array
+        plainTextIndex = tag.index;
+    }
+    outputText += this.plainText.substring(plainTextIndex, this.plainText.length);
+    return outputText;
+}
 
 
 
@@ -120,24 +137,12 @@ $(document).ready(function() {
 
         var separatedInput = new SeparatedHTML(inputSearchText);
 
-        console.log(separatedInput.getPlainText());
-        console.log(separatedInput.getTagList());
-
         requestMatches(separatedInput.getPlainText()).then(function(response) {
             console.log("Success!", response);
 
-            //
-
-
-
-
-
-
-
-
-
-
-
+            //want to put html text back together again
+            var highlightedText = separatedInput.recombine();
+            document.getElementById("inputSearchText").innerHTML = highlightedText;
 
         });
     }, 1500);
