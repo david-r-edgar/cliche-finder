@@ -1,5 +1,13 @@
 
 
+var replaceNonASCII = function(inputText) {
+    //FIXME combine all these?
+    var nbspRe = /&nbsp;/g
+    var nbspRe2 = /\xa0/g
+    return inputText.replace(nbspRe, ' ').replace(nbspRe2, '').replace(/[^\x00-\x7F]/g, "");
+}
+
+
 
 
 
@@ -30,11 +38,11 @@ var SeparatedHTML = function(inputHTML) {
     //save, in their separate places, the plain text before it and the tag itself
     while ((tagArray = tagOrComment.exec(inputHTML)) !== null) {
         var matchStartIndex = tagOrComment.lastIndex - tagArray[0].length;
-        this.plainText += inputHTML.substring(prevIndex, matchStartIndex);
+        this.plainText += replaceNonASCII(inputHTML.substring(prevIndex, matchStartIndex));
         this.tagList.push({index: this.plainText.length, tag: tagArray[0]});
         prevIndex = tagOrComment.lastIndex;
     }
-    this.plainText += inputHTML.substring(prevIndex);
+    this.plainText += replaceNonASCII(inputHTML.substring(prevIndex));
 }
 
 SeparatedHTML.prototype.getPlainText = function() {
@@ -44,6 +52,51 @@ SeparatedHTML.prototype.getPlainText = function() {
 SeparatedHTML.prototype.getTagList = function() {
     return this.tagList;
 }
+
+
+
+/**
+ * Combines the list of matched cliches with the list of tags, creating an ordered list
+ * which can then be reinserted into the plain text.
+ *
+ * Where necessary, we further split up the matched cliche ranges, to ensure proper
+ * nesting inside original tags.
+ *
+ * @param {Array} matchedRangeList - array of matched cliches and the ranges they cover
+ */
+SeparatedHTML.prototype.insertMatches = function(matchedRangeList) {
+
+    var fmtOpen = "<span class=hi-li>";
+    var fmtClose = "</span>";
+
+    var combinedTagList = [];
+
+    var tagListIndex = 0;
+    for (matchedRange of matchedRangeList) {
+        while (undefined !== this.tagList[tagListIndex]
+                && this.tagList[tagListIndex].index <= matchedRange.beginPosn) {
+            combinedTagList.push({index: this.tagList[tagListIndex].index, tag: this.tagList[tagListIndex].tag});
+            tagListIndex ++
+        }
+        combinedTagList.push({index: matchedRange.beginPosn, tag: fmtOpen}); //"cliche text");
+        while (undefined !== this.tagList[tagListIndex]
+                && this.tagList[tagListIndex].index < matchedRange.endPosn) {
+            combinedTagList.push({index: this.tagList[tagListIndex].index, tag: fmtClose});
+            combinedTagList.push({index: this.tagList[tagListIndex].index, tag: this.tagList[tagListIndex].tag});
+            combinedTagList.push({index: this.tagList[tagListIndex].index, tag: fmtOpen}); //"cliche text");
+            tagListIndex ++;
+        }
+        combinedTagList.push({index: matchedRange.endPosn, tag: fmtClose});
+    }
+    while (tagListIndex < this.tagList.length) {
+        combinedTagList.push({index: this.tagList[tagListIndex].index, tag: this.tagList[tagListIndex].tag});
+        tagListIndex++
+    }
+
+    this.tagList = combinedTagList;
+}
+
+
 
 
 /**
@@ -72,30 +125,14 @@ SeparatedHTML.prototype.recombine = function() {
 
 
 
+
+
+
+
+
+
+
 $(document).ready(function() {
-    /*
-    var highlightMatches = function(matchArray) {
-        var highlightedText = document.getElementById("inputSearchText").innerText;
-        var offset = 0;
-        var fmtOpen = "<span class=hi-li>";
-        var fmtClose = "</span>";
-
-        //FIXME need to sort first (on server side?)
-        for (match in matchArray) {
-            console.log(matchArray[match]);
-            var posn = matchArray[match].posn + offset;
-            highlightedText = highlightedText.substr(0, posn) + fmtOpen + highlightedText.substr(posn);
-            offset += fmtOpen.length;
-            posn = matchArray[match].posn + matchArray[match].len + offset;
-            highlightedText = highlightedText.substr(0, posn) + fmtClose + highlightedText.substr(posn);
-            offset += fmtClose.length;
-        }
-        //document.getElementById("inputSearchText").innerHTML = highlightedText;
-    }
-    */
-
-
-
 
     /**
      * Sort and split up matched cliche ranges obtained from the server.
@@ -162,10 +199,9 @@ $(document).ready(function() {
             }
         }
 
+        console.log("sortedNonOverlappingMatches", sortedNonOverlappingMatches);
         return sortedNonOverlappingMatches;
     }
-
-
 
 
     /**
@@ -178,20 +214,19 @@ $(document).ready(function() {
 
             var xhr = new XMLHttpRequest();
             var url = "api/search";
-            var inputSearchText = encodeURIComponent(
-            document.getElementById("inputSearchText").innerText).replace(/%20/g, "+");
-            console.log("inputSearchText:", inputSearchText);
-            var params = "input=" + inputSearchText + "&content-type=text/plain";
-            xhr.open("POST", url, true);
-            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            var formData = new FormData();
+            formData.append("input", plainTextInput);
+
+            xhr.open("POST", url);
+            xhr.send(formData);
+
             xhr.onreadystatechange = function() {
                 if(xhr.readyState == 4 && xhr.status == 200) {
                     console.log(xhr.responseText);
-                    //highlightMatches();
                     resolve(JSON.parse(xhr.responseText).matches);
                 }
             }
-            xhr.send(params);
         });
     };
 
@@ -227,7 +262,9 @@ $(document).ready(function() {
 
         requestMatches(separatedInput.getPlainText()).then(function(matchedCliches) {
             console.log("Server returned matching cliches: ", matchedCliches);
-            sanitiseMatchedCliches(matchedCliches);
+            var sortedNonOverlappingMatches = sanitiseMatchedCliches(matchedCliches);
+
+            separatedInput.insertMatches(sortedNonOverlappingMatches);
 
             //want to put html text back together again
             var highlightedText = separatedInput.recombine();
