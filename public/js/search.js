@@ -199,7 +199,6 @@ $(document).ready(function() {
             }
         }
 
-        console.log("sortedNonOverlappingMatches", sortedNonOverlappingMatches);
         return sortedNonOverlappingMatches;
     }
 
@@ -223,7 +222,7 @@ $(document).ready(function() {
 
             xhr.onreadystatechange = function() {
                 if(xhr.readyState == 4 && xhr.status == 200) {
-                    console.log(xhr.responseText);
+                    console.log("server responded:", xhr.responseText);
                     resolve(JSON.parse(xhr.responseText).matches);
                 }
             }
@@ -260,17 +259,16 @@ $(document).ready(function() {
 
         var separatedInput = new SeparatedHTML(inputSearchText);
 
-        requestMatches(separatedInput.getPlainText()).then(function(matchedCliches) {
-            console.log("Server returned matching cliches: ", matchedCliches);
-            var sortedNonOverlappingMatches = sanitiseMatchedCliches(matchedCliches);
+        if (separatedInput.getPlainText().length > 0) {
+            requestMatches(separatedInput.getPlainText()).then(function(matchedCliches) {
+                var sortedNonOverlappingMatches = sanitiseMatchedCliches(matchedCliches);
+                separatedInput.insertMatches(sortedNonOverlappingMatches);
 
-            separatedInput.insertMatches(sortedNonOverlappingMatches);
-
-            //want to put html text back together again
-            var highlightedText = separatedInput.recombine();
-            document.getElementById("inputSearchText").innerHTML = highlightedText;
-
-        });
+                //want to put html text back together again
+                var highlightedText = separatedInput.recombine();
+                document.getElementById("inputSearchText").innerHTML = highlightedText;
+            });
+        }
     }, 1500);
 
     document.getElementById("inputSearchText").addEventListener("paste", submitSearchRequest);
