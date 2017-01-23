@@ -4,7 +4,7 @@ var replaceNonASCII = function(inputText) {
     //FIXME combine all these?
     var nbspRe = /&nbsp;/g
     var nbspRe2 = /\xa0/g
-    return inputText.replace(nbspRe, ' ').replace(nbspRe2, '').replace(/[^\x00-\x7F]/g, "");
+    return inputText.replace(nbspRe, ' ').replace(nbspRe2, '')/*.replace(/[^\x00-\x7F]/g, "")*/;
 }
 
 
@@ -126,14 +126,6 @@ SeparatedHTML.prototype.recombine = function() {
     outputText += this.plainText.substring(plainTextIndex, this.plainText.length);
     return outputText;
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -276,6 +268,8 @@ $(document).ready(function() {
                 //want to put html text back together again
                 var highlightedText = separatedInput.recombine();
                 document.getElementById("inputSearchText").innerHTML = highlightedText;
+                document.getElementById("inputSearchText").blur(); //FIXME doesn't work to stop kb input
+
             });
         }
     }, 1500);
