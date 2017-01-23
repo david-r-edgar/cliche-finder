@@ -17,4 +17,11 @@ $(document).ready(function(){
         appendVariant(variants);
         variants++;
     });
+
+
+    $("#display_name").change(function() {
+        if ($("#pattern\\[0\\]").val().length <= 0) {
+            $("#pattern\\[0\\]").val($("#display_name").val());
+        }
+    });
 });
