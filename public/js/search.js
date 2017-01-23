@@ -43,7 +43,12 @@ var SeparatedHTML = function(inputHTML) {
         prevIndex = tagOrComment.lastIndex;
     }
     this.plainText += replaceNonASCII(inputHTML.substring(prevIndex));
+
+    this.removeOldMatchesFromTagList();
 }
+
+SeparatedHTML.prototype.FMT_OPEN = '<span class="clfi_match">';
+SeparatedHTML.prototype.FMT_CLOSE = '</span>';
 
 SeparatedHTML.prototype.getPlainText = function() {
     return this.plainText;
@@ -53,6 +58,13 @@ SeparatedHTML.prototype.getTagList = function() {
     return this.tagList;
 }
 
+SeparatedHTML.prototype.removeOldMatchesFromTagList = function() {
+    for (tagIndex in this.tagList) {
+        if ((this.tagList[tagIndex].tag == this.FMT_OPEN) || (this.tagList[tagIndex].tag == this.FMT_CLOSE)) {
+            this.tagList.splice(tagIndex, 1);
+        }
+    }
+}
 
 
 /**
@@ -66,9 +78,6 @@ SeparatedHTML.prototype.getTagList = function() {
  */
 SeparatedHTML.prototype.insertMatches = function(matchedRangeList) {
 
-    var fmtOpen = "<span class=hi-li>";
-    var fmtClose = "</span>";
-
     var combinedTagList = [];
 
     var tagListIndex = 0;
@@ -78,15 +87,15 @@ SeparatedHTML.prototype.insertMatches = function(matchedRangeList) {
             combinedTagList.push({index: this.tagList[tagListIndex].index, tag: this.tagList[tagListIndex].tag});
             tagListIndex ++
         }
-        combinedTagList.push({index: matchedRange.beginPosn, tag: fmtOpen}); //"cliche text");
+        combinedTagList.push({index: matchedRange.beginPosn, tag: this.FMT_OPEN}); //"cliche text");
         while (undefined !== this.tagList[tagListIndex]
                 && this.tagList[tagListIndex].index < matchedRange.endPosn) {
-            combinedTagList.push({index: this.tagList[tagListIndex].index, tag: fmtClose});
+            combinedTagList.push({index: this.tagList[tagListIndex].index, tag: this.FMT_CLOSE});
             combinedTagList.push({index: this.tagList[tagListIndex].index, tag: this.tagList[tagListIndex].tag});
-            combinedTagList.push({index: this.tagList[tagListIndex].index, tag: fmtOpen}); //"cliche text");
+            combinedTagList.push({index: this.tagList[tagListIndex].index, tag: this.FMT_OPEN}); //"cliche text");
             tagListIndex ++;
         }
-        combinedTagList.push({index: matchedRange.endPosn, tag: fmtClose});
+        combinedTagList.push({index: matchedRange.endPosn, tag: this.FMT_CLOSE});
     }
     while (tagListIndex < this.tagList.length) {
         combinedTagList.push({index: this.tagList[tagListIndex].index, tag: this.tagList[tagListIndex].tag});
