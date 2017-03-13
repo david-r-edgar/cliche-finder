@@ -1,4 +1,4 @@
-<!-- resources/views/cliches/index.blade.php -->
+<!-- resources/views/clicheOfTheDay/index.blade.php -->
 
 @extends('layouts.app')
 
@@ -7,7 +7,6 @@
     <!-- Bootstrap Boilerplate... -->
 
     <div class="panel-body">
-        <!--<div style="font-size: 22px;"><a href="cliche/new">Add new cliche</a></div>-->
 
         <div style="font-size: 28px;">
             @if (isset($clicheOfTheDay))
@@ -23,6 +22,3 @@
 
 @endsection
 
-@section('footer_scripts')
-<script src="/js/cliches.js"></script>
-@endsection

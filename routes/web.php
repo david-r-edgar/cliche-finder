@@ -15,8 +15,7 @@
 //    return view('welcome');
 //});
 
-Route::get('/', 'ClicheOfTheDayController@index');
-
+Route::get('/', 'HomeController@index');
 
 Route::get('/search', 'SearchController@index');
 Route::post('/search', 'SearchController@search');
@@ -31,3 +30,6 @@ Route::get('/cliche/{cliche}', 'ClicheController@details');
 Route::post('/cliche', 'ClicheController@store');
 Route::post('/cliche/{cliche}', 'ClicheController@edit');
 Route::delete('/cliche/{cliche}', 'ClicheController@destroy');
+
+Route::get('/clichesOfTheDay', 'ClicheOfTheDayController@index');
+Route::get('/clicheOfTheDay/new', 'ClicheOfTheDayController@newClicheOfTheDay');
