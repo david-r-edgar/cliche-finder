@@ -15,7 +15,7 @@
 //    return view('welcome');
 //});
 
-Route::get('/', 'SearchController@index');
+Route::get('/', 'ClicheOfTheDayController@index');
 
 
 Route::get('/search', 'SearchController@index');
