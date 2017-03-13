@@ -13,4 +13,9 @@ class Cliche extends Model
     {
         return $this->hasMany(Variant::class);
     }
+
+    public function clicheOfTheDay()
+    {
+        return $this->belongsTo(clicheOfTheDay::class);
+    }
 }
