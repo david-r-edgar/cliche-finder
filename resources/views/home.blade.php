@@ -14,7 +14,7 @@
                 -->
 
                 <div class="panel-body">
-                    <div style="font-size: 28px;">{{ $clicheOfTheDay }}</div>
+                    <div style="font-size: 28px;">“{{ $clicheOfTheDay }}”</div>
                     <div style="font-size: 16px;">{{ $cotdNote }}</div>
                 </div>
 
