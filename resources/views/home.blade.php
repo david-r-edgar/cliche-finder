@@ -14,8 +14,8 @@
                 -->
 
                 <div class="panel-body">
-                    <div style="font-size: 28px;">Cliche of the day goes here</div>
-                    <div style="font-size: 16px;">Note about it</div>
+                    <div style="font-size: 28px;">{{ $clicheOfTheDay }}</div>
+                    <div style="font-size: 16px;">{{ $cotdNote }}</div>
                 </div>
 
                 <div style="font-size: 18px;"><a href="search/index">Search your text for cliches</a></div>
