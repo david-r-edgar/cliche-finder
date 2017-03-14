@@ -24,6 +24,8 @@
                     <div>guest</div>
                 @else
                     <div>functions for logged in user</div>
+                    <div><a href="cliches">List of cliches</a></div>
+                    <div><a href="clichesOfTheDay">Manage cliches of the day</a></div>
                 @endif
 
             </div>

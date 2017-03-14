@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Cliche;
 use App\ClicheOfTheDay;
 
 use Illuminate\Http\Request;
@@ -28,15 +29,15 @@ class ClicheOfTheDayController extends Controller
     */
     public function index(Request $request)
     {
-        $clicheOfTheDay = ClicheOfTheDay::get()->first();
+        $cliches = Cliche::with('clicheOfTheDay')->orderBy('created_at', 'asc')->get();
+
     /*
         $clicheOfTheDay = ClicheOfTheDay::filter(function($cotd) {
             return (strtotime($cotd->date) == strtotime('today'));
         })->first();
 */
-        //$cliches = Cliche::orderBy('created_at', 'asc')->get();
 
-        return view('clicheOfTheDay.index', ['clicheOfTheDay' => $clicheOfTheDay]);
+        return view('clicheOfTheDay.index', ['cliches' => $cliches]);
     }
 
 }

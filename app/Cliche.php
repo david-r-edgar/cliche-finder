@@ -16,6 +16,6 @@ class Cliche extends Model
 
     public function clicheOfTheDay()
     {
-        return $this->belongsTo(clicheOfTheDay::class);
+        return $this->hasOne(ClicheOfTheDay::class);
     }
 }

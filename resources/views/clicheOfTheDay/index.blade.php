@@ -4,19 +4,38 @@
 
 @section('content')
 
-    <!-- Bootstrap Boilerplate... -->
-
     <div class="panel-body">
 
-        <div style="font-size: 28px;">
-            @if (isset($clicheOfTheDay))
-                {{ $clicheOfTheDay->date }}
-            @else
-                no cliche of the day
-            @endif
+        <div style="font-size: 14px;">
+            <div class="container">
+            @foreach ($cliches as $cliche)
+                <div class="row">
+                    <div class="col-md-5">{{ $cliche->display_name }}</div>
+                    <div class="col-md-1">
+                        @if($cliche->clicheOfTheDay)
+                            <input type="checkbox" id="cbox{{ $cliche->id }}" value="second_checkbox" checked="checked">
+                        @else
+                            <input type="checkbox" id="cbox{{ $cliche->id }}" value="second_checkbox">
+                        @endif
+                    </div>
+                    <div class="col-md-2">
+                        @if($cliche->clicheOfTheDay)
+                            {{ $cliche->clicheOfTheDay->date }}
+                        @else
+
+                        @endif
+                    </div>
+                    <div class="col-md-4">
+                        @if($cliche->clicheOfTheDay)
+                            {{ $cliche->clicheOfTheDay->note }}
+                        @else
+
+                        @endif
+                    </div>
+                </div> <!-- row -->
+            @endforeach
         </div>
 
-        <div style="font-size: 20px;"><a href="search/index">Search your text for cliches</a></div>
     </div>
 
 

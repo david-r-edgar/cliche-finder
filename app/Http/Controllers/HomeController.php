@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\ClicheOfTheDay;
+
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        return view('home');
+        $clicheOfTheDay =  ClicheOfTheDay::get()->first();
+
+        return view('home', [
+            'clicheOfTheDay' => $clicheOfTheDay]);
     }
 }
