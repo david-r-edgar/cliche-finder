@@ -46,3 +46,7 @@
     </div>
 
 @endsection
+
+@section('footer_scripts')
+<script src="/js/clicheOfTheDay.js"></script>
+@endsection
