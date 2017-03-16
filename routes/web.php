@@ -33,3 +33,4 @@ Route::delete('/cliche/{cliche}', 'ClicheController@destroy');
 
 Route::get('/clichesOfTheDay', 'ClicheOfTheDayController@index');
 Route::get('/clicheOfTheDay/new', 'ClicheOfTheDayController@newClicheOfTheDay');
+Route::post('/clichesOfTheDay', 'ClicheOfTheDayController@save');
