@@ -23,8 +23,13 @@ class HomeController extends Controller
         }
         else
         {
-            //if none, select a random one from those with no date yet
-            $clicheOfTheDay = ClicheOfTheDay::with('cliche')->where('date', NULL)->get()->random();
+            $cotdsWithNoDate = ClicheOfTheDay::with('cliche')->where('date', NULL)->get();
+
+            if (count($cotdsWithNoDate) > 0)
+            {
+                //if none, select a random one from those with no date yet
+                $clicheOfTheDay = $cotdsWithNoDate->random();
+            }
 
             if (!$clicheOfTheDay)
             {
